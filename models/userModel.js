@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require("validator");
 const bcrypt = require('bcryptjs');
-const { createAccountNumber } = require('../utils/helper');
 
 const userSchema = new mongoose.Schema(
   {
@@ -107,9 +106,6 @@ userSchema.virtual('transactions', {
 userSchema.pre("save", function (next) {
     // checking if password was modified or there is a new document
   if (!this.isModified("password") || this.isNew) {
-    // set account number and balance
-    this.accountNumber = createAccountNumber();
-    this.balance = 0.0;
     return next();
   }
 
