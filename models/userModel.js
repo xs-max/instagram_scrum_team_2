@@ -9,6 +9,12 @@ const userSchema = new mongoose.Schema(
       required: [true, "A user must have a name"],
       minlength: [5, "Full name must be more than five(5) characters"],
     },
+    userName: {
+      type: String,
+      required: [true, "A user must have a name"],
+      minlength: [4, "Full name must be more than five(5) characters"],
+      unique: true,
+    },
     email: {
       type: String,
       required: [true, "A user must have an email"],
@@ -33,58 +39,14 @@ const userSchema = new mongoose.Schema(
         message: "Passwords don't match",
       },
     },
-    role: {
+    photo: {
       type: String,
-      enum: ["admin", "user"],
-      default: "user",
     },
-    accountNumber: {
-      type: String,
-      unique: true,
+    followers: {
+      type: [mongoose.Schema.Types.ObjectId],
     },
-    typeOfAccount: {
-      type: String,
-      required: [true, 'A user should have an account type'],
-      enum: ['savings', 'current'],
-      default: 'savings'
-    },
-    balance: {
-      type: Number,
-    },
-    prevBalance: {
-        type: Number
-    },
-    phone: {
-      type: String,
-      required: [true, "A user must have phone number"],
-      maxlength: [14, "Enter a valid phone number"],
-      minlength: [7, "Enter a valid number"],
-      validate: {
-        validator: function (el) {
-          const values = [
-            "+",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "0",
-          ];
-          const elements = el.split("");
-          elements.forEach((element) => {
-            if (!values.includes(element)) return false;
-          });
-        },
-        message: "Enter a valid phone number",
-      },
-    },
-    disable: {
-        type: Boolean,
-        default: false
+    following: {
+      type: [mongoose.Schema.Types.ObjectId],
     },
     passwordChangedAt: Date,
     passwordResetToken: String,
@@ -125,9 +87,7 @@ userSchema.pre(/^save/, async function(next) {
   next();
 })
 
-userSchema.pre(/^find/, function() {
-    this.select('-prevBalance');
-});
+
 
 userSchema.methods.correctPassword = async function (
   candidatePassword,
